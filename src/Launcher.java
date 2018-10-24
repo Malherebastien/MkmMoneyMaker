@@ -7,15 +7,15 @@ public class Launcher
     {
         ArticleChecker.downloadFile();
         HashMap<Integer, ArrayList<Double>> map = PriceGuideExtractor.extract("res/base64");
-        System.out.println(map.size());
+
 
         ArrayList<Double> arrayList;
+        System.out.println(map.keySet().size());
         for (Integer key : map.keySet())
         {
             arrayList = map.get(key);
-            System.out.println(map.get(key));
-            if (arrayList.get(1) > 10.0 && arrayList.get(0) > arrayList.get(1)/2)
-                System.out.println(key);
+            if (arrayList.get(1) > 10.0 && arrayList.get(0) < arrayList.get(1)/2)
+                System.out.println(key + " : " + map.get(key));
         }
     }
     public static void main(String[] args)

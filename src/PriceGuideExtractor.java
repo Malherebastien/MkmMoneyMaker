@@ -20,25 +20,23 @@ public class PriceGuideExtractor
         {
             sc = new Scanner(new File(targetFile));
 
-            String[] ligne;
-            ArrayList<Double> doubleArray = new ArrayList<>();
+            String lignePleine;
+            String[] ligneSplit;
+            //ArrayList<Double> doubleArray = new ArrayList<>();
             sc.nextLine(); // On ne traite pas la première ligne
             while (sc.hasNext())
             {
-                ligne = sc.nextLine().split(",");
-                doubleArray.clear();
+                lignePleine = sc.nextLine() + ";";
+                ligneSplit = lignePleine.split(",");
+                ArrayList<Double> doubleArray = new ArrayList<>();
                 // On sort si le trendPrice ou le low Price sont vides.
-                if (ligne[2].equals("") || ligne[3].equals(""))
-                    break;
+                if (ligneSplit[2].equals("") || ligneSplit[3].equals(""))
+                    continue;
 
                 // On ajoute dans l'arrayList le trendPrice et le low Price (colonnes 3 et 4)
-                for (int i = 0; i < ligne.length; i++)
-                {
-                    System.out.println(ligne[i]);
-                    doubleArray.add(Double.parseDouble(ligne[2]));
-                    doubleArray.add(Double.parseDouble(ligne[3]));
-                }
-                map.put(Integer.parseInt(ligne[0]), doubleArray);
+                doubleArray.add(Double.parseDouble(ligneSplit[2]));
+                doubleArray.add(Double.parseDouble(ligneSplit[3]));
+                map.put(Integer.parseInt(ligneSplit[0]), doubleArray);
             }
         } catch (FileNotFoundException e)
         {
@@ -47,6 +45,7 @@ public class PriceGuideExtractor
         {
             sc.close();
         }
+
         return map;
     }
 }
