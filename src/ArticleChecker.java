@@ -187,7 +187,7 @@ public class ArticleChecker {
         return _lastContent;
     }
 
-    public static void articleChecker(String[] args)
+    public static void downloadFile()
     {
         // USAGE EXAMPLE
 

@@ -18,32 +18,34 @@ public class PriceGuideExtractor
         HashMap<Integer, ArrayList<Double>> map = new HashMap<>();
         try
         {
-           sc = new Scanner(new File(targetFile));
+            sc = new Scanner(new File(targetFile));
+
+            String[] ligne;
+            ArrayList<Double> doubleArray = new ArrayList<>();
+            sc.nextLine(); // On ne traite pas la première ligne
+            while (sc.hasNext())
+            {
+                ligne = sc.nextLine().split(",");
+                doubleArray.clear();
+                // On sort si le trendPrice ou le low Price sont vides.
+                if (ligne[2].equals("") || ligne[3].equals(""))
+                    break;
+
+                // On ajoute dans l'arrayList le trendPrice et le low Price (colonnes 3 et 4)
+                for (int i = 0; i < ligne.length; i++)
+                {
+                    System.out.println(ligne[i]);
+                    doubleArray.add(Double.parseDouble(ligne[2]));
+                    doubleArray.add(Double.parseDouble(ligne[3]));
+                }
+                map.put(Integer.parseInt(ligne[0]), doubleArray);
+            }
         } catch (FileNotFoundException e)
         {
             e.printStackTrace();
         } finally
         {
             sc.close();
-        }
-
-        String[] ligne;
-        ArrayList<Double> doubleArray = new ArrayList<>();
-        while (sc.hasNext())
-        {
-            ligne = sc.nextLine().split(",");
-            doubleArray.clear();
-            // On sort si le trendPrice ou le low Price sont vides.
-            if (ligne[3].equals("") || ligne[4].equals(""))
-                break;
-
-            // On ajoute dans l'arrayList le trendPrice et le low Price (colonnes 3 et 4)
-            for (int i = 1; i < ligne.length; i++)
-            {
-                doubleArray.add(Double.parseDouble(ligne[3]));
-                doubleArray.add(Double.parseDouble(ligne[4]));
-            }
-            map.put(Integer.parseInt(ligne[0]), doubleArray);
         }
         return map;
     }
