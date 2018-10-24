@@ -1,11 +1,3 @@
-/*
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.GregorianCalendar;
-import java.util.zip.GZIPInputStream;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.security.AnyTypePermission;
@@ -13,14 +5,20 @@ import org.apache.commons.codec.binary.Base64;
 import org.api.mkm.modele.Article;
 import org.api.mkm.modele.Link;
 import org.api.mkm.modele.Response;
+import org.api.mkm.tools.Tools;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
 
-public class PriceChecker
-{
-    private static final byte[] BUFFER_SIZE = new byte[256];
+public class ArticleChecker {
 
     private String _mkmAppToken;
     private String _mkmAppSecret;
@@ -32,134 +30,97 @@ public class PriceChecker
     private String _lastContent;
     private boolean _debug;
 
-
-    */
-/**
+    /**
      * Constructor. Fill parameters according to given MKM profile app parameters.
      *
      * @param appToken
      * @param appSecret
-     * @param accessToken
-     * @param accessSecret
-     *//*
-
-    public PriceChecker(String appToken, String appSecret, String accessToken, String accessSecret)
-    {
+     */
+    public ArticleChecker(String appToken, String appSecret) {
         _mkmAppToken = appToken;
         _mkmAppSecret = appSecret;
-        _mkmAccessToken = accessToken;
-        _mkmAccessTokenSecret = accessSecret;
+        _mkmAccessToken = "";
+        _mkmAccessTokenSecret = "";
 
         _lastError = null;
         _debug = false;
     }
 
-    */
-/**
+    /**
      * Activates the console debug messages
-     *
      * @param flag true if you want to enable console messages; false to disable any notification.
-     *//*
-
-    public void setDebug(boolean flag)
-    {
+     */
+    public void setDebug(boolean flag) {
         _debug = flag;
     }
 
-    */
-/**
+    /**
      * Encoding function. To avoid deprecated version, the encoding used is UTF-8.
-     *
      * @param str
      * @return
      * @throws UnsupportedEncodingException
-     *//*
-
-    private String rawurlencode(String str) throws UnsupportedEncodingException
-    {
+     */
+    private String rawurlencode(String str) throws UnsupportedEncodingException {
         return URLEncoder.encode(str, "UTF-8");
     }
 
-    private void _debug(String msg)
-    {
-        if (_debug)
-        {
+    private void _debug(String msg) {
+        if (_debug) {
             System.out.print(GregorianCalendar.getInstance().getTime());
             System.out.print(" > ");
             System.out.println(msg);
         }
     }
 
-    */
-/**
+    /**
      * Get last Error exception.
-     *
      * @return null if no errors; instead the raised exception.
-     *//*
-
-    public Throwable lastError()
-    {
+     */
+    public Throwable lastError() {
         return _lastError;
     }
 
-    */
-/**
+    /**
      * Perform the request to given url with OAuth 1.0a API.
      *
-     * @param requestURL url to be requested. Ex. https://www.mkmapi.eu/ws/v1.1/products/island/1/1/false
+     * @param requestURL url to be requested. Ex. https://api.cardmarket.com/ws/v1.1/products/island/1/1/false
      * @return true if request was successfully executed. You can retrieve the content with responseContent();
-     *//*
-
-    public boolean request(String requestURL, String idGame)
-    {
+     */
+    public boolean request(String requestURL) {
         _lastError = null;
         _lastCode = 0;
         _lastContent = "";
-        try
-        {
+        try {
 
-            _debug("Requesting " + requestURL);
+            _debug("Requesting "+requestURL);
 
-            String realm = "https://www.mkmapi.eu/ws/v2.0/stock/file";
-            String oauth_version = "1.0";
-            String oauth_consumer_key = _mkmAppToken;
-            String oauth_token = _mkmAccessToken;
-            String oauth_signature_method = "HMAC-SHA1";
+            String realm = requestURL ;
+            String oauth_version = "1.0" ;
+            String oauth_consumer_key = _mkmAppToken ;
+            String oauth_token = _mkmAccessToken ;
+            String oauth_signature_method = "HMAC-SHA1" ;
             // String oauth_timestamp = "" + (System.currentTimeMillis()/1000) ;
-            String oauth_timestamp = "1407917892";
+            String oauth_timestamp = "1407917892" ;
             // String oauth_nonce = "" + System.currentTimeMillis() ;
-            String oauth_nonce = "53eb1f44909d6";
-
-            String encodedRequestURL = rawurlencode("https://www.mkmapi.eu/ws/v2.0/stock/file");
-
-            String baseString = "GET&" + encodedRequestURL + "&";
-
-            String paramString =
-                    "idGame=" + rawurlencode(idGame) + "&" +
-                            "idLanguage=" + rawurlencode("2") + "&" +
-                            "isSealed=" + rawurlencode("false") + "&" +
-                            "oauth_consumer_key=" + rawurlencode(oauth_consumer_key) + "&" +
-                            "oauth_nonce=" + rawurlencode(oauth_nonce) + "&" +
-                            "oauth_signature_method=" + rawurlencode(oauth_signature_method) + "&" +
-                            "oauth_timestamp=" + rawurlencode(oauth_timestamp) + "&" +
-                            "oauth_token=" + rawurlencode(oauth_token) + "&" +
-                            "oauth_version=" + rawurlencode(oauth_version);
-
-            */
-/*String paramString =
-                            "oauth_consumer_key=" + rawurlencode(oauth_consumer_key) + "&" +
-                            "oauth_nonce=" + rawurlencode(oauth_nonce) + "&" +
-                            "oauth_signature_method=" + rawurlencode(oauth_signature_method) + "&" +
-                            "oauth_timestamp=" + rawurlencode(oauth_timestamp) + "&" +
-                            "oauth_token=" + rawurlencode(oauth_token) + "&" +
-                            "oauth_version=" + rawurlencode(oauth_version);*//*
+            String oauth_nonce = "53eb1f44909d6" ;
 
 
-            baseString = baseString + rawurlencode(paramString);
+            String encodedRequestURL = rawurlencode(requestURL) ;
+
+            String baseString = "GET&" + encodedRequestURL + "&" ;
+
+            String paramString = "oauth_consumer_key=" + rawurlencode(oauth_consumer_key) + "&" +
+                    "oauth_nonce=" + rawurlencode(oauth_nonce) + "&" +
+                    "oauth_signature_method=" + rawurlencode(oauth_signature_method) + "&" +
+                    "oauth_timestamp=" + rawurlencode(oauth_timestamp) + "&" +
+                    "oauth_token=" + rawurlencode(oauth_token) + "&" +
+                    "oauth_version=" + rawurlencode(oauth_version) ;
+
+            baseString = baseString + rawurlencode(paramString) ;
 
             String signingKey = rawurlencode(_mkmAppSecret) +
                     "&" +
-                    rawurlencode(_mkmAccessTokenSecret);
+                    rawurlencode(_mkmAccessTokenSecret) ;
 
             Mac mac = Mac.getInstance("HmacSHA1");
             SecretKeySpec secret = new SecretKeySpec(signingKey.getBytes(), mac.getAlgorithm());
@@ -176,96 +137,76 @@ public class PriceChecker
                             "oauth_consumer_key=\"" + oauth_consumer_key + "\", " +
                             "oauth_token=\"" + oauth_token + "\", " +
                             "oauth_signature_method=\"" + oauth_signature_method + "\", " +
-                            "oauth_signature=\"" + oauth_signature + "\"";
+                            "oauth_signature=\"" + oauth_signature + "\"" ;
 
             HttpURLConnection connection = (HttpURLConnection) new URL(requestURL).openConnection();
-            connection.addRequestProperty("Authorization", authorizationProperty);
-            connection.connect();
+            connection.addRequestProperty("Authorization", authorizationProperty) ;
+            connection.connect() ;
 
             // from here standard actions...
             // read response code... read input stream.... close connection...
 
             _lastCode = connection.getResponseCode();
 
-            _debug("Response Code is " + _lastCode);
+            _debug("Response Code is "+_lastCode);
 
-            if (200 == _lastCode || 401 == _lastCode || 404 == _lastCode)
-            {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(_lastCode == 200 ? connection.getInputStream() : connection.getErrorStream()));
+            if (200 == _lastCode || 401 == _lastCode || 404 == _lastCode) {
+                BufferedReader rd = new BufferedReader(new InputStreamReader(_lastCode==200?connection.getInputStream():connection.getErrorStream()));
                 StringBuffer sb = new StringBuffer();
                 String line;
-                while ((line = rd.readLine()) != null)
-                {
+                while ((line = rd.readLine()) != null) {
                     sb.append(line);
                 }
                 rd.close();
                 _lastContent = sb.toString();
-                _debug("Response Content is \n" + _lastContent);
+                _debug("Response Content is \n"+_lastContent);
             }
 
             return (_lastCode == 200);
 
-        } catch (Exception e)
-        {
-            _debug("(!) Error while requesting " + requestURL);
+        } catch (Exception e) {
+            _debug("(!) Error while requesting "+requestURL);
             _lastError = e;
         }
         return false;
     }
 
-    */
-/**
+    /**
      * Get response code from last request.
-     *
      * @return
-     *//*
-
-    public int responseCode()
-    {
+     */
+    public int responseCode() {
         return _lastCode;
     }
 
-    */
-/**
+    /**
      * Get response content from last request.
-     *
      * @return
-     *//*
-
-    public String responseContent()
-    {
+     */
+    public String responseContent() {
         return _lastContent;
     }
 
-    public static void downloadGzip(String game)
+    public static void articleChecker(String[] args)
     {
+        // USAGE EXAMPLE
 
-        String mkmAppToken;
-        String mkmAppSecret;
-        String mkmAccessToken;
-        String mkmAccessTokenSecret;
-
-        //DYLAN :
-        */
-/*mkmAppToken = "IRMl8nouWdUV1F1U";
-        mkmAppSecret = "V8H3Y6vGKgAOzCpMfMUpdh7xZ03dcT8c";
-        mkmAccessToken = "sD8hWX6EHDJogS9S2JBK4erz5yFPGhj7";
-        mkmAccessTokenSecret = "bel7M1TOnrnJKPjS9q7Xg7mKPEpInHA5";*//*
+        String mkmAppToken = "tMg9qBysWquAh3Vq";
+        String mkmAppSecret = "VQdhR0qOblARZb4IxQVI0bTNRPPHEhh9";
 
 
-        mkmAppToken = "Ov6SqyKTaOERiQOr";
-        mkmAppSecret = "hK7LkohwKoXrBrTLLJ5nf0Cg56WpS3A7";
-        mkmAccessToken = "q8aF7TBBQ72NnWk1uxu6GCdleiOTSZCp";
-        mkmAccessTokenSecret = "XPt6DALM7vRr5mmKP8NC9gjvUc063n3D";
-
-        PriceChecker app = new PriceChecker(mkmAppToken, mkmAppSecret, mkmAccessToken, mkmAccessTokenSecret);
+        ArticleChecker app = new ArticleChecker(mkmAppToken, mkmAppSecret);
 
         app.setDebug(true);
+        /*if (app.request("https://api.cardmarket.com/ws/v2.0/priceguide"))
+        {
+            //if (app.request("https://api.cardmarket.com/ws/v2.0/articles/22510")) {
+            System.out.println(app.responseContent());
+        }*/
 
-        String requestURL = "";
-        String idGame = "";
+        String requestURL = "https://api.cardmarket.com/ws/v2.0/priceguide";
 
-        if (app.request(requestURL, idGame))
+        if (app.request(requestURL))
         {
             XStream xstream = new XStream(new StaxDriver());
 
@@ -279,11 +220,11 @@ public class PriceChecker
             String xml = app.responseContent();
             Response res = (Response) xstream.fromXML(xml);
 
-            xml = res.getStock();
+            xml = res.getPriceguidefile();
 
             try
             {
-                FileWriter fileWriter = new FileWriter("StockFiles/encodedString.txt");
+                FileWriter fileWriter = new FileWriter("res/encodedString.txt");
                 fileWriter.write(xml);
                 fileWriter.flush();
                 fileWriter.close();
@@ -294,11 +235,21 @@ public class PriceChecker
 
             try
             {
-                decode("StockFiles/encodedString.txt", "StockFiles/base64.gz");
+                decode("res/encodedString.txt", "res/base64.gz");
             } catch (Exception e)
             {
                 e.printStackTrace();
             }
+
+            String targetFile = "res/base64";
+            try
+            {
+                Tools.unzip(new File("res/base64.gz"), new File(targetFile));
+            } catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+
         }
     }
 
@@ -330,29 +281,4 @@ public class PriceChecker
         return bytes;
 
     }
-
-    public static void unzip(String link) throws IOException
-    {
-        GZIPInputStream zipIn = new GZIPInputStream(new FileInputStream(link));
-        try
-        {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("StockFiles/base64"));
-
-            try
-            {
-                int read;
-                zipIn.close();
-                while ((read = zipIn.read(BUFFER_SIZE)) != -1)
-                {
-                    bos.write(BUFFER_SIZE, 0, read);
-                }
-            } catch (Throwable throwable)
-            {
-                throw throwable;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
-*/
