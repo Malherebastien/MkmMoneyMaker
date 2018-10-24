@@ -5,17 +5,16 @@ public class Launcher
 {
     public Launcher()
     {
-        ArticleChecker.downloadFile();
+        PriceGuideDownloader.downloadFile();
         HashMap<Integer, ArrayList<Double>> map = PriceGuideExtractor.extract("res/base64");
 
-
-        ArrayList<Double> arrayList;
-        System.out.println(map.keySet().size());
+        ArrayList<Double> priceArray;
+        ArrayList<Integer> idProductArray = new ArrayList<>();
         for (Integer key : map.keySet())
         {
-            arrayList = map.get(key);
-            if (arrayList.get(1) > 10.0 && arrayList.get(0) < arrayList.get(1)/2)
-                System.out.println(key + " : " + map.get(key));
+            priceArray = map.get(key);
+            if (priceArray.get(1) > 10.0 && priceArray.get(0) < priceArray.get(1)/2)
+                idProductArray.add(key);
         }
     }
     public static void main(String[] args)
