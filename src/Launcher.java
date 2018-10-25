@@ -1,3 +1,5 @@
+import request.PriceGuideExtractor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

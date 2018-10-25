@@ -6,16 +6,9 @@ import org.api.mkm.modele.Article;
 import org.api.mkm.modele.Link;
 import org.api.mkm.modele.Response;
 import org.api.mkm.tools.Tools;
+import request.MkmRequester;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.GregorianCalendar;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 
 public class PriceGuideDownloader
 {

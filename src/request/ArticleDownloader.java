@@ -1,3 +1,5 @@
+package request;
+
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 import com.thoughtworks.xstream.security.AnyTypePermission;
@@ -5,9 +7,7 @@ import org.api.mkm.modele.Article;
 import org.api.mkm.modele.Link;
 import org.api.mkm.modele.Product;
 import org.api.mkm.modele.Response;
-
-import java.util.ArrayList;
-import java.util.List;
+import request.MkmRequester;
 
 public class ArticleDownloader
 {
@@ -29,14 +29,18 @@ public class ArticleDownloader
             XStream.setupDefaultSecurity(xstream);
             xstream.addPermission(AnyTypePermission.ANY);
             xstream.alias("response", Response.class);
-            xstream.addImplicitCollection(Response.class, "links", Link.class);
-            xstream.addImplicitCollection(Response.class, "article", Article.class);
+            //xstream.addImplicitCollection(Response.class, "links", Link.class);
+            //xstream.addImplicitCollection(Response.class, "article", Article.class);
+            xstream.addImplicitCollection(Response.class, "product", Product.class);
             xstream.ignoreUnknownElements();
 
             String xml = app.responseContent();
             Response res = (Response) xstream.fromXML(xml);
 
-            List<Product> productArray = res.getProduct();
+            /*String name = res.get();
+            String expansion = res.getProduct();
+
+            System.out.println(productArray.get);*/
         }
 
         return null;
