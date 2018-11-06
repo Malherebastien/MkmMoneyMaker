@@ -9,6 +9,8 @@ import org.api.mkm.modele.Product;
 import org.api.mkm.modele.Response;
 import request.MkmRequester;
 
+import java.util.List;
+
 public class ArticleDownloader
 {
     public static String downloadArticle(Integer idProduct)
@@ -18,7 +20,7 @@ public class ArticleDownloader
 
         MkmRequester app = new MkmRequester(mkmAppToken, mkmAppSecret);
 
-        app.setDebug(true);
+        app.setDebug(false);
 
         String requestURL = "https://api.cardmarket.com/ws/v2.0/articles/" + idProduct;
 
@@ -29,18 +31,24 @@ public class ArticleDownloader
             XStream.setupDefaultSecurity(xstream);
             xstream.addPermission(AnyTypePermission.ANY);
             xstream.alias("response", Response.class);
-            //xstream.addImplicitCollection(Response.class, "links", Link.class);
-            //xstream.addImplicitCollection(Response.class, "article", Article.class);
-            xstream.addImplicitCollection(Response.class, "product", Product.class);
+            xstream.addImplicitCollection(Response.class, "links", Link.class);
+            xstream.addImplicitCollection(Response.class, "article", Article.class);
+            //xstream.addImplicitCollection(Response.class, "product", Product.class);
             xstream.ignoreUnknownElements();
 
             String xml = app.responseContent();
             Response res = (Response) xstream.fromXML(xml);
 
-            /*String name = res.get();
-            String expansion = res.getProduct();
+            List<Article> article = res.getArticle();
+            Product product = article.get(0).getProduct();
 
-            System.out.println(productArray.get);*/
+            if (article.get(0).getCondition().equals("EX")
+                    || article.get(0).getCondition().equals("NM")
+                    || article.get(0).getCondition().equals("MT"))
+            {
+                if (article.get(1).getPrice() > article.get(0).getPrice() * 1.2)
+                    return product.getEnName() + " : " + product.getExpansionName();
+            }
         }
 
         return null;
